@@ -1,6 +1,8 @@
 package com.shogi.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.ConeShapeBuilder;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
@@ -19,7 +22,8 @@ import java.util.ArrayList;
  * This class handles the switching between screens
  */
 
-public class Main extends ApplicationAdapter{
+public class Main extends ApplicationAdapter {
+
     SpriteBatch batch;
     Texture boardTexture;
     Texture masterTexture;
@@ -32,10 +36,10 @@ public class Main extends ApplicationAdapter{
 
 
     //array to handle switching between screens
-    ArrayList<Screen> screens= new ArrayList<Screen>();
+    ArrayList<Screen> screens = new ArrayList<Screen>();
 
     @Override
-    public void create () {
+    public void create() {
         //initialize the hashmap in the constants file
         Constants.init();
 
@@ -47,7 +51,7 @@ public class Main extends ApplicationAdapter{
 
         //Initialize camera
         camera = new OrthographicCamera(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
-        camera.position.set(camera.viewportWidth /2f, camera.viewportHeight /2f, 0);
+        camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
 
 
         viewport = new StretchViewport(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, camera);
@@ -60,6 +64,11 @@ public class Main extends ApplicationAdapter{
         game = new Game(masterTexture, boardTexture, camera);
         menu = new Menu(menuTexture);
 
+        //set the game class as the input processor
+       // Gdx.input.setInputProcessor(game);
+
+
+
 
         //add screens to the arraylist
         screens.add(menu);
@@ -71,8 +80,8 @@ public class Main extends ApplicationAdapter{
     }
 
     @Override
-    public void render () {
-       System.out.println(Gdx.graphics.getDeltaTime());
+    public void render() {
+       // System.out.println(Gdx.graphics.getDeltaTime());
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -89,17 +98,24 @@ public class Main extends ApplicationAdapter{
     }
 
     @Override
-    public void dispose () {
+    public void dispose() {
         batch.dispose();
         boardTexture.dispose();
         masterTexture.dispose();
         menuTexture.dispose();
     }
 
+    //resizes the viewport when the window is resized and updates the camera
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
         camera.update();
     }
-
 }
+
+
+
+
+
+
+

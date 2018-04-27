@@ -2,6 +2,8 @@ package com.shogi.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,21 +18,35 @@ import com.badlogic.gdx.utils.viewport.Viewport;
  * for the board to be drawn, it will handle user interaction
  */
 
-public class Game extends Screen {
+public class Game extends Screen implements InputProcessor{
 	SpriteBatch batch;
 	Texture boardTexture;
 	Texture masterTexture;
 	Board board;
 
 	Game(Texture masterTexture, Texture boardTexture, Camera camera){
-			this.masterTexture = masterTexture;
+
+
+		this.masterTexture = masterTexture;
 		this.boardTexture = boardTexture;
 
 		board = new Board(masterTexture, boardTexture, camera);
+
+
 	}
 
 	@Override
 	public int Run(SpriteBatch batch){
+
+		if(Gdx.input.justTouched()){
+			int position = board.getPositionFromMouse();
+			System.out.println("Selecting square " + position);
+
+			if(position >= 0){
+				board.selectSquare(position);
+			}
+
+		}
 
 		board.update();
 		Render(batch);
@@ -41,4 +57,67 @@ public class Game extends Screen {
 	public void Render(SpriteBatch batch){
 		board.draw(batch);
 	}
+
+
+
+
+
+
+	//input methods
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		int position = board.getPositionFromMouse();
+		System.out.println("Selecting square " + position);
+
+		if(position >= 0){
+			board.selectSquare(position);
+			System.out.println("Selecting square " + position);
+		}
+		return true;
+	}
+
+
+
+
+
+	@Override
+	public boolean keyDown(int keycode) {
+		System.out.println("A");
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		return false;
+	}
+
+
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		return false;
+	}
+
 }
+
