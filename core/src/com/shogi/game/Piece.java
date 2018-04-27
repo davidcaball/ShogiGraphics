@@ -30,15 +30,21 @@ public class Piece {
     //Constructor
     Piece(String pieceName, Texture masterTexture, int id, int position){
         this.pieceName = pieceName;
-        promoted = false;
         this.masterTexture = masterTexture;
         this.id = id;
         this.position = position;
+
+        //promoted initially starts at false
+        promoted = false;
+
+
         region = pieceIdToTextureRegion();
         sprite = new Sprite(region);
         Vector2 coords = positionToCoordinates(position);
         sprite.setPosition(coords.x, coords.y);
 
+        //change the white boolean to false because a piece id above 14 is black, also rotate the piece
+        //since it should be displayed upside down
         if(id > 14) {
             white = false;
             sprite.setRotation(180.0f);
@@ -70,6 +76,7 @@ public class Piece {
         return position;
     }
 
+    //draws this specific piece
     public void draw(SpriteBatch batch){
         System.out.println("drawing piece " + id + "pos(" + position + ") at " + sprite.getX() + ", " + sprite.getY() + "" + "is master Tex null: " + (masterTexture == null)
         + "sprite coords are " + region.getRegionX() + ", " + region.getRegionY());
@@ -94,12 +101,16 @@ public class Piece {
         return start;
     }
 
+    //this method creates the texture region that the sprite will use, it uses a master texture passed from the
+    //Game class and retrieves the coordinates for each specific piece by putting the piece id into a hashmap
+    //and received a 2d vector back containing the coordinates, it then creates the region with the size specified
+    //in the constants file
     public TextureRegion pieceIdToTextureRegion(){
         Vector2 coords;
         coords = Constants.spriteRegions.get(id);
         System.out.println("id " + id + " returns " + coords.x + " " + coords.y);
         System.out.println((masterTexture == null) + ", " + coords.x + ", " + coords.y);
-        TextureRegion texRegion = new TextureRegion(masterTexture, (int)coords.x, (int)coords.y, 100, 100);
+        TextureRegion texRegion = new TextureRegion(masterTexture, (int)coords.x, (int)coords.y, Constants.SQUARE_SIZE, Constants.SQUARE_SIZE);
         return texRegion;
     }
 

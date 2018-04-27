@@ -8,41 +8,32 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class Game extends ApplicationAdapter {
+/**
+ * Created by David on 4/27/2018.
+ * The game class contains a Board object, the game class simply creates the board and calls
+ * for the board to be drawn, it will handle user interaction
+ */
+
+public class Game extends Screen {
 	SpriteBatch batch;
 	Texture boardTexture;
 	Texture masterTexture;
 	Board board;
-	
-	@Override
-	public void create () {
-		batch = new SpriteBatch();
-		boardTexture = new Texture("extendedshogineonboard.png");
-		masterTexture = new Texture("spritesheet.png");
-		Constants.init();
-		System.out.println(masterTexture == null);
-		board = new Board(masterTexture);
 
+	Game(Texture masterTexture, Texture boardTexture){
+		this.masterTexture = masterTexture;
+		this.boardTexture = boardTexture;
 
+		board = new Board(masterTexture, boardTexture);
 	}
 
 	@Override
-	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		System.out.println("1");
-		batch.draw(boardTexture, 0, 0);
+	public int Run(SpriteBatch batch){
+		Render(batch);
+		return 1;
+	}
+
+	public void Render(SpriteBatch batch){
 		board.draw(batch);
-
-
-		batch.end();
-	}
-	
-	@Override
-	public void dispose () {
-		batch.dispose();
-		boardTexture.dispose();
-		masterTexture.dispose();
 	}
 }

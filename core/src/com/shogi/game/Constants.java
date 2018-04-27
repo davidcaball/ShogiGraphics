@@ -13,6 +13,8 @@ public class Constants {
     public static final int WINDOW_HEIGHT = 1080;
     public static final int WINDOW_WIDTH = 1700;
 
+    public static final int SQUARE_SIZE = 100;
+
 
 
     public static HashMap<Integer, Vector2> spriteRegions;

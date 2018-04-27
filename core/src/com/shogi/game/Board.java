@@ -9,12 +9,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  */
 public class Board {
     Texture masterTexture;
+    Texture boardTexture;
+
     private byte [] position = new byte[81+14+2]; //81 board spaces, 14 counters for captured pieces, and 2 king locations
     Piece[] pieceArray = new Piece[40];
 
-    Board(Texture masterTexture){
+    Board(Texture masterTexture, Texture boardTexture){
 
+        //assign arguments to classes member variables
         this.masterTexture = masterTexture;
+        this.boardTexture = boardTexture;
+
+
         //initialize board
 
         //initialize array to 0;
@@ -58,12 +64,11 @@ public class Board {
 
         initializePieceLocations();
     }
-
+    //Creates the new objects for all the pieces
     public void  initializePieceLocations(){
         int pieceIndex = 0;
         for(int i = 0; i < 95; i++){
             if(position[i] == 0) continue;
-            System.out.println(i);
             pieceArray[pieceIndex] = new Piece("", masterTexture, position[i], i);
             pieceArray[pieceIndex].setPosition(i);
             pieceIndex++;
@@ -72,6 +77,7 @@ public class Board {
 
     //draws every piece in the pieceArray
     public void draw(SpriteBatch batch){
+        batch.draw(boardTexture, 0, 0);
        for(Piece piece : pieceArray){
            if(piece != null) {
 
