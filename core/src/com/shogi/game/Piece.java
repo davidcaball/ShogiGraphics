@@ -25,6 +25,8 @@ public class Piece {
     //maps a piece name to its texture coordinates
 
 
+
+
     Sprite sprite;
 
     //Constructor
@@ -62,10 +64,10 @@ public class Piece {
     }
 
     public void setPosition(int position){
-        if(position > 0 && position < 96)
+        if(position >= 0 && position < 96)
             this.position = position;
         else
-            System.out.println("Invalid Position");
+            System.out.println(position + " is an invalid position");
     }
 
     //Getters
@@ -76,10 +78,11 @@ public class Piece {
         return position;
     }
 
+
     //draws this specific piece
     public void draw(SpriteBatch batch){
-        System.out.println("drawing piece " + id + "pos(" + position + ") at " + sprite.getX() + ", " + sprite.getY() + "" + "is master Tex null: " + (masterTexture == null)
-        + "sprite coords are " + region.getRegionX() + ", " + region.getRegionY());
+      //  System.out.println("drawing piece " + id + "pos(" + position + ") at " + sprite.getX() + ", " + sprite.getY() + "" + "is master Tex null: " + (masterTexture == null)
+      //  + "sprite coords are " + region.getRegionX() + ", " + region.getRegionY());
         sprite.draw(batch);
     }
 
@@ -93,11 +96,11 @@ public class Piece {
             int column = pos % 9;
             int row = pos / 9;
 
-            System.out.println("pos is " + pos + "column: " + column + "row: " + row);
+          //  System.out.println("pos is " + pos + "column: " + column + "row: " + row);
             start.x -= 100 * column;
             start.y += 100 * row;
         }
-        System.out.println("piece " + id + " should be drawn at position " + start.x + ", " + start.y);
+      //  System.out.println("piece " + id + " should be drawn at position " + start.x + ", " + start.y);
         return start;
     }
 
@@ -108,11 +111,13 @@ public class Piece {
     public TextureRegion pieceIdToTextureRegion(){
         Vector2 coords;
         coords = Constants.spriteRegions.get(id);
-        System.out.println("id " + id + " returns " + coords.x + " " + coords.y);
-        System.out.println((masterTexture == null) + ", " + coords.x + ", " + coords.y);
+      //  System.out.println("id " + id + " returns " + coords.x + " " + coords.y);
+        //System.out.println((masterTexture == null) + ", " + coords.x + ", " + coords.y);
         TextureRegion texRegion = new TextureRegion(masterTexture, (int)coords.x, (int)coords.y, Constants.SQUARE_SIZE, Constants.SQUARE_SIZE);
         return texRegion;
     }
+
+
 
 
 }

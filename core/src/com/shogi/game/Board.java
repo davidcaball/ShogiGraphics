@@ -1,8 +1,14 @@
 package com.shogi.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  * Created by David on 4/27/2018.
@@ -10,15 +16,22 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Board {
     Texture masterTexture;
     Texture boardTexture;
+    Sprite selectedSquare;
+    Rectangle boardRectangle;
+    Camera camera;
 
     private byte [] position = new byte[81+14+2]; //81 board spaces, 14 counters for captured pieces, and 2 king locations
     Piece[] pieceArray = new Piece[40];
 
-    Board(Texture masterTexture, Texture boardTexture){
+    Board(Texture masterTexture, Texture boardTexture, Camera camera){
+
+        boardRectangle = new Rectangle(373, 86, 897, 899);
+        selectedSquare = new Sprite(masterTexture, 694, 100, 100, 100);
 
         //assign arguments to classes member variables
         this.masterTexture = masterTexture;
         this.boardTexture = boardTexture;
+        this.camera = camera;
 
 
         //initialize board
@@ -75,6 +88,27 @@ public class Board {
         }
     }
 
+    public void update(){
+
+        //372, 86
+        int x = Gdx.input.getX();
+        int y = Constants.WINDOW_HEIGHT - Gdx.input.getY();
+
+        if(boardRectangle.contains(x,y)) {
+
+            System.out.println(x + ", " + y);
+
+            x -= 372;
+            y -= 86;
+
+            x = x / 100 * 100 + 373;
+            y = y / 100 * 100 + 70;
+
+            selectedSquare.setPosition(x, y);
+        }
+
+    }
+
     //draws every piece in the pieceArray
     public void draw(SpriteBatch batch){
         batch.draw(boardTexture, 0, 0);
@@ -84,6 +118,19 @@ public class Board {
                piece.draw(batch);
            }
        }
+        if(boardRectangle.contains(Gdx.input.getX(), Constants.WINDOW_HEIGHT - Gdx.input.getY()))
+          selectedSquare.draw(batch);
+
+//        batch.end();
+//        batch.begin();
+//        ShapeRenderer shapeRenderer = new ShapeRenderer();
+//        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+//
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        shapeRenderer.setColor(Color.RED);
+//        shapeRenderer.rect(373, 70, 904, 904);
+//        shapeRenderer.end();
+
     }
 
 

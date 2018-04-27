@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class Constants {
 
 
-    public static final int WINDOW_HEIGHT = 1080;
+    public static final int WINDOW_HEIGHT = 1060;
     public static final int WINDOW_WIDTH = 1700;
 
     public static final int SQUARE_SIZE = 100;
