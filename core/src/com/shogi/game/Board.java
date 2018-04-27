@@ -1,5 +1,6 @@
 package com.shogi.game;
 
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -12,6 +13,8 @@ public class Board {
     Piece[] pieceArray = new Piece[40];
 
     Board(Texture masterTexture){
+
+        this.masterTexture = masterTexture;
         //initialize board
 
         //initialize array to 0;
@@ -53,14 +56,15 @@ public class Board {
             position[i] = 27;
 
 
-
+        initializePieceLocations();
     }
 
     public void  initializePieceLocations(){
         int pieceIndex = 0;
         for(int i = 0; i < 95; i++){
             if(position[i] == 0) continue;
-            pieceArray[pieceIndex] = new Piece("", masterTexture, position[i]);
+            System.out.println(i);
+            pieceArray[pieceIndex] = new Piece("", masterTexture, position[i], i);
             pieceArray[pieceIndex].setPosition(i);
             pieceIndex++;
         }
@@ -69,8 +73,10 @@ public class Board {
     //draws every piece in the pieceArray
     public void draw(SpriteBatch batch){
        for(Piece piece : pieceArray){
-           if(piece != null)
-             piece.draw(batch);
+           if(piece != null) {
+
+               piece.draw(batch);
+           }
        }
     }
 

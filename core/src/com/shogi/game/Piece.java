@@ -1,5 +1,6 @@
 package com.shogi.game;
 
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,21 +21,29 @@ public class Piece {
     TextureRegion region;
     boolean promoted;
     //white for true, black for false
-    boolean white;
+    boolean white = true;
     //maps a piece name to its texture coordinates
 
 
     Sprite sprite;
 
     //Constructor
-    Piece(String pieceName, Texture masterTexture, int id){
+    Piece(String pieceName, Texture masterTexture, int id, int position){
         this.pieceName = pieceName;
         promoted = false;
         this.masterTexture = masterTexture;
         this.id = id;
-        sprite = new Sprite(pieceIdToTextureRegion());
+        this.position = position;
+        region = pieceIdToTextureRegion();
+        sprite = new Sprite(region);
         Vector2 coords = positionToCoordinates(position);
         sprite.setPosition(coords.x, coords.y);
+
+        if(id > 14) {
+            white = false;
+            sprite.setRotation(180.0f);
+        }
+
     }
 
     //Setters
@@ -62,29 +71,35 @@ public class Piece {
     }
 
     public void draw(SpriteBatch batch){
+        System.out.println("drawing piece " + id + "pos(" + position + ") at " + sprite.getX() + ", " + sprite.getY() + "" + "is master Tex null: " + (masterTexture == null)
+        + "sprite coords are " + region.getRegionX() + ", " + region.getRegionY());
         sprite.draw(batch);
     }
 
     //gets the position of a piece and returns the coordinates it should be drawn at as a Vector2
     public Vector2 positionToCoordinates(int pos){
-        Vector2 start = new Vector2(1175.0f, 90.0f);
+        Vector2 start = new Vector2(1175.0f, 70.0f);
         if(pos > 80){
             //TODO: get captured locations
         }
         else{
-            int column = position % 9;
-            int row = position / 9;
+            int column = pos % 9;
+            int row = pos / 9;
 
+            System.out.println("pos is " + pos + "column: " + column + "row: " + row);
             start.x -= 100 * column;
             start.y += 100 * row;
         }
+        System.out.println("piece " + id + " should be drawn at position " + start.x + ", " + start.y);
         return start;
     }
 
     public TextureRegion pieceIdToTextureRegion(){
-        Vector2 region;
-        region = Constants.spriteRegions.get(id);
-        TextureRegion texRegion= new TextureRegion(masterTexture, region.x, region.y, 100, 100);
+        Vector2 coords;
+        coords = Constants.spriteRegions.get(id);
+        System.out.println("id " + id + " returns " + coords.x + " " + coords.y);
+        System.out.println((masterTexture == null) + ", " + coords.x + ", " + coords.y);
+        TextureRegion texRegion = new TextureRegion(masterTexture, (int)coords.x, (int)coords.y, 100, 100);
         return texRegion;
     }
 

@@ -20,7 +20,7 @@ public class Game extends ApplicationAdapter {
 		boardTexture = new Texture("extendedshogineonboard.png");
 		masterTexture = new Texture("spritesheet.png");
 		Constants.init();
-
+		System.out.println(masterTexture == null);
 		board = new Board(masterTexture);
 
 
@@ -31,6 +31,7 @@ public class Game extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
+		System.out.println("1");
 		batch.draw(boardTexture, 0, 0);
 		board.draw(batch);
 
