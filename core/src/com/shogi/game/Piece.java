@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.ConeShapeBuilder;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
 
 
 /**
@@ -122,6 +123,9 @@ public class Piece {
         coords = Constants.spriteRegions.get(id);
         sprite.setRegion((int)coords.x, (int)coords.y, Constants.SQUARE_SIZE, Constants.SQUARE_SIZE);
     }
+
+
+
 
 
 

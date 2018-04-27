@@ -15,6 +15,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 
+import java.util.ArrayList;
+
 /**
  * Created by David on 4/27/2018.
  */
@@ -23,9 +25,18 @@ public class Board {
     Texture boardTexture;
     Sprite hoveredSquare;
     Sprite selectedSquare;
+    int selectedPosition;
     Rectangle boardRectangle;
     Camera camera;
-    Boolean squareSelected;
+    Boolean pieceSelected;
+    ArrayList<Sprite> possibleMoveSprites;
+
+    //holds the possible moves for the selected piece
+    ArrayList<Integer> moves = new ArrayList<Integer>();
+
+    //this keeps track of how many possible moves there are for the piece that is selected, it
+    //prevents drawing uncecessary sprites
+    int possibleMovesForCurrentSelection;
 
 
     private byte [] position = new byte[81+14+2]; //81 board spaces, 14 counters for captured pieces, and 2 king locations
@@ -33,7 +44,7 @@ public class Board {
 
     Board(Texture masterTexture, Texture boardTexture, Camera camera){
 
-        squareSelected = false;
+        pieceSelected = false;
         boardRectangle = new Rectangle(373, 86, 897, 899);
 
         hoveredSquare = new Sprite(masterTexture, 694, 100, 100, 100);
@@ -52,6 +63,17 @@ public class Board {
         initializePositionArray();
 
         initializePieceLocations();
+
+
+        possibleMoveSprites = new ArrayList<Sprite>();
+
+        //initialize array that highlights cells showing possible moves
+        for(int i = 0; i < 18; i++){
+            possibleMoveSprites.add(new Sprite(masterTexture, 694, 100, 100, 100));
+            possibleMoveSprites.get(i).setColor(Color.BLUE);
+        }
+
+
 
     }
 
@@ -77,7 +99,7 @@ public class Board {
         int x = Gdx.input.getX();
         int y = Constants.WINDOW_HEIGHT - Gdx.input.getY();
 
-        if(squareSelected){
+        if(pieceSelected){
             selectedSquare.setAlpha(1f);
         }
         else{
@@ -105,6 +127,9 @@ public class Board {
 
         selectedSquare.draw(batch);
         hoveredSquare.draw(batch);
+        for(int i = 0; i < possibleMovesForCurrentSelection && i < possibleMoveSprites.size(); i++){
+            possibleMoveSprites.get(i).draw(batch);
+        }
 
     }
 
@@ -122,42 +147,77 @@ public class Board {
 
 
 
-    public void udpateLocations(){
+    public void updateLocations(){
         int pieceIndex = 0;
         for(int i = 0; i < 95; i++){
+
             if(position[i] == 0) continue;
             pieceArray[pieceIndex].setId(position[i]);
             pieceArray[pieceIndex].setPosition(i);
+            Vector2 newCoords = pieceArray[pieceIndex].positionToCoordinates(i); //TODO: fix this reverse shit
+            pieceArray[pieceIndex].sprite.setPosition(newCoords.x, newCoords.y);
             pieceArray[pieceIndex].updateTexture(position[i]);
             pieceIndex++;
         }
     }
 
-    public void makeMoveFromUserInput(){
-
+    public void attemptMove(int move){
+        for(int i = 0; i < moves.size(); i++){
+            if(moves.get(i) == move)
+                makeMove(move);
+        }
     }
 
+    public void makeMove(int move){
+        position[move] = position[selectedPosition];
+        position[selectedPosition] = 0;
+        pieceSelected = false;
+        updateLocations();
+    }
 
+    //highlights a cell if it has been clicked and there is a piece in that square
     public void selectSquare(int pos){
+        if(position[pos] == 0){
+            possibleMovesForCurrentSelection = 0;
+            pieceSelected = false;
+            selectedPosition = -1;
+            return;
+        }
         Vector2 coords = getStepCoordinateFromPosition(pos);
         selectedSquare.setPosition(coords.x, coords.y);
-        squareSelected = true;
+        pieceSelected = true;
+        selectedPosition = pos;
+        showPossibleMoves(pos);
     }
 
+    public void showPossibleMoves(int pos){
+        moves = getPossibleMoves(pos, position[pos]);
+        possibleMovesForCurrentSelection = moves.size();
+        int i;
+        for(i = 0; i < moves.size() && i < possibleMoveSprites.size(); i++){
+            Vector2 coords= getStepCoordinateFromPosition(moves.get(i));
+            possibleMoveSprites.get(i).setPosition(coords.x, coords.y);
+            possibleMoveSprites.get(i).setAlpha(1.0f);
+        }
+        for(; i < possibleMoveSprites.size(); i++){
+            possibleMoveSprites.get(i).setAlpha(0f);
+        }
+    }
 
 
 
     public int getPositionFromMouse(){
         Vector3 input = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(input);
+        System.out.print("X: " + input.x + "Y: " + input.y);
         int row = 0, column = 0;
         if(boardRectangle.contains(input.x, input.y)) {
             input.x -= 372;
             input.y -= 86;
 
-            column = (int) input.x / (int) 100;
+            column = (int)input.x / (int) 100;
             row = (int) input.y / (int) 100;
-            return row * 9 + column;
+            return 80 - (row * 9 + column);
         }
         else{
             //TODO: work on captured cells
@@ -208,7 +268,7 @@ public class Board {
 
         int x = 373;
         int y = 71;
-
+        pos = 80 - pos;
         int columns = pos % 9;
         int rows =  pos / 9;
 
@@ -217,6 +277,158 @@ public class Board {
 
 
         return new Vector2(x,y);
+    }
+
+
+    //gets all the possible moves from a position
+    public ArrayList<Integer> getPossibleMoves(int pos, int id){
+
+        ArrayList<Integer> moves = new ArrayList<Integer>();
+
+        //white pawn
+        if(id == 13)
+            addIfInBound(moves, pos + 9, pos);
+            //black pawn
+        else if(id == 27)
+            addIfInBound(moves, pos - 9, pos);
+
+            //rook
+        else if(id == 9 || id == 23){
+            //adds all positions in that row
+            for(int i = pos - pos % 9; i < ((pos + 9) - (pos % 9)); i++) {
+                if(i == pos) continue;
+                moves.add(i);
+            }
+            //adds all moves in that column
+            for(int i = pos % 9; i < 81; i+=9) {
+                if(i == pos) continue;
+                moves.add(i);
+            }
+        }
+
+        //bishop
+        else if(id == 11 || id == 25){
+            for(int i = pos - 8; isInBound(i); i -= 8) { // Up + Left
+                if(!addIfInBound(moves, i, pos)) break;
+                if(isAtBorder(i)) break;
+            }
+            for(int i = pos - 10; isInBound(i); i -= 10) { //Up + Right
+                if(!addIfInBound(moves, i, pos)) break;
+                if(isAtBorder(i)) break;
+            }
+            for(int i = pos + 8; isInBound(i); i += 8){ //Down + Left
+                if(!addIfInBound(moves, i, pos)) break;
+                if(isAtBorder(i)) break;
+            }
+            for(int i = pos + 10; isInBound(i); i += 10) { //Down + Right
+                if(!addIfInBound(moves, i, pos)) break;
+                if(isAtBorder(i)) break;
+            }
+        }
+
+        //white lance
+        else if(id == 1)
+            for(int i = pos + 9; i < 81; i+=9){
+                addIfInBound(moves, i, pos);
+            }
+
+            //black lance
+        else if(id == 15)
+            for(int i = pos - 9; i >=0 ; i-=9)
+                addIfInBound(moves, i, pos);
+
+            //white knight
+        else if(id == 3){
+            addIfInBound(moves, pos - 18 + 1, pos);
+            addIfInBound(moves, pos - 18 + 1, pos);
+        }
+
+        //white silver
+        else if(id == 5){
+            addIfInBound(moves, pos + 8, pos);
+            addIfInBound(moves, pos + 9, pos);
+            addIfInBound(moves, pos - 10, pos);
+            addIfInBound(moves, pos - 8, pos);
+            addIfInBound(moves, pos + 10, pos);
+        }
+
+        //black silver
+        else if(id == 19){
+            addIfInBound(moves, pos - 8, pos);
+            addIfInBound(moves, pos - 9, pos);
+            addIfInBound(moves, pos - 10, pos);
+            addIfInBound(moves, pos + 8, pos);
+            addIfInBound(moves, pos + 10, pos);
+        }
+
+        //white gold
+        else if(id == 7){
+
+            addIfInBound(moves, pos + 1, pos);
+            addIfInBound(moves, pos - 1, pos);
+            addIfInBound(moves, pos + 8, pos);
+            addIfInBound(moves, pos + 9, pos);
+            addIfInBound(moves, pos - 9, pos);
+            addIfInBound(moves, pos + 10, pos);
+
+
+        }
+
+        //black gold
+        else if(id == 21){
+            addIfInBound(moves, pos - 8, pos);
+            addIfInBound(moves, pos - 9, pos);
+            addIfInBound(moves, pos - 10, pos);
+            addIfInBound(moves, pos + 1, pos);
+            addIfInBound(moves, pos - 1, pos);
+            addIfInBound(moves, pos + 9, pos);
+        }
+
+        //king
+        else if(id == 8 || id == 22){
+            addIfInBound(moves, pos - 8, pos);
+            addIfInBound(moves, pos - 9, pos);
+            addIfInBound(moves, pos - 10, pos);
+            addIfInBound(moves, pos + 8, pos);
+            addIfInBound(moves, pos + 10, pos);
+            addIfInBound(moves, pos + 1, pos);
+            addIfInBound(moves, pos - 1, pos);
+            addIfInBound(moves, pos + 9, pos);
+        }
+
+        //TODO: add moves for promoted piece
+
+        return moves;
+    }
+
+    //adds the possible move to the arraylist if it is in the bounds of the board
+    public boolean  addIfInBound(ArrayList<Integer> list, int move, int pos){
+
+        if(move >= 0 && move < 81){
+            Boolean isWhite = (position[pos] < 15 && position[pos] > 0);
+            if(isWhite && position[move] < 15  && position[move] > 0) return false;
+            if(!isWhite && position[move] > 15) return false;
+            list.add(move);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isInBound(int pos){
+        if(pos >= 0 && pos < 81){
+            return true;
+        }
+        return false;
+    }
+
+    //since we are using a 1d array it is hard to keep the bishop from rolling over to the other
+    //side once it reaches an edge, this while return true is pos is on the border of the board
+    public boolean isAtBorder(int pos){
+        System.out.println("pos is " + pos);
+        if(pos < 9 || pos > 71 || pos % 9 == 0 || pos % 9 == 8)
+            return true;
+        return false;
+
     }
 
 

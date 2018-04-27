@@ -43,6 +43,9 @@ public class Game extends Screen implements InputProcessor{
 			System.out.println("Selecting square " + position);
 
 			if(position >= 0){
+				if(board.pieceSelected){
+					board.attemptMove(position);
+				}
 				board.selectSquare(position);
 			}
 
