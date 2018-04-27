@@ -117,6 +117,12 @@ public class Piece {
         return texRegion;
     }
 
+    public void updateTexture(int id){
+        Vector2 coords;
+        coords = Constants.spriteRegions.get(id);
+        sprite.setRegion((int)coords.x, (int)coords.y, Constants.SQUARE_SIZE, Constants.SQUARE_SIZE);
+    }
+
 
 
 

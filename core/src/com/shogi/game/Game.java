@@ -31,9 +31,11 @@ public class Game extends Screen {
 
 	@Override
 	public int Run(SpriteBatch batch){
+
 		board.update();
 		Render(batch);
 		return 1;
+
 	}
 
 	public void Render(SpriteBatch batch){

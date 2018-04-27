@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.ConeShapeBuilder;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class Main extends ApplicationAdapter{
     Screen menu;
     int nextScreen;
     OrthographicCamera camera;
+    StretchViewport viewport;
 
 
     //array to handle switching between screens
@@ -46,6 +48,11 @@ public class Main extends ApplicationAdapter{
         //Initialize camera
         camera = new OrthographicCamera(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         camera.position.set(camera.viewportWidth /2f, camera.viewportHeight /2f, 0);
+
+
+        viewport = new StretchViewport(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, camera);
+        viewport.apply();
+
         camera.update();
 
 
@@ -59,7 +66,7 @@ public class Main extends ApplicationAdapter{
         screens.add(game);
 
         //set first screen to 0 (menu)
-        nextScreen = 1;
+        nextScreen = 0;
 
     }
 
@@ -88,4 +95,11 @@ public class Main extends ApplicationAdapter{
         masterTexture.dispose();
         menuTexture.dispose();
     }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height);
+        camera.update();
+    }
+
 }
