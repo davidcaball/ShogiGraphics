@@ -40,7 +40,14 @@ public class Game extends Screen implements InputProcessor{
 
 		if(Gdx.input.justTouched()){
 			int position = board.getPositionFromMouse();
-			System.out.println("Selecting square " + position);
+
+			int testid = -1;
+			for(int i = 0; i < 40; i++){
+				if(board.pieceArray[i].id == board.position[position]){
+					testid = board.pieceArray[i].id;
+				}
+			}
+			System.out.println("Selecting square " + position + " has position value: " + board.position[position] + " the piece has id " + testid);
 
 			if(position >= 0){
 				if(board.pieceSelected){

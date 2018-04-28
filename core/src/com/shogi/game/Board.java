@@ -39,7 +39,7 @@ public class Board {
     int possibleMovesForCurrentSelection;
 
 
-    private byte [] position = new byte[81+14+2]; //81 board spaces, 14 counters for captured pieces, and 2 king locations
+    byte [] position = new byte[81+14+2]; //81 board spaces, 14 counters for captured pieces, and 2 king locations
     Piece[] pieceArray = new Piece[40];
 
     Board(Texture masterTexture, Texture boardTexture, Camera camera){
@@ -151,12 +151,19 @@ public class Board {
         int pieceIndex = 0;
         for(int i = 0; i < 95; i++){
 
+
+            System.out.println("POSITION ARRAY: pos: " + i + " = " + position[i]);
+
             if(position[i] == 0) continue;
+
+
             pieceArray[pieceIndex].setId(position[i]);
             pieceArray[pieceIndex].setPosition(i);
             Vector2 newCoords = pieceArray[pieceIndex].positionToCoordinates(i); //TODO: fix this reverse shit
             pieceArray[pieceIndex].sprite.setPosition(newCoords.x, newCoords.y);
             pieceArray[pieceIndex].updateTexture(position[i]);
+
+            System.out.println("PIECE ARRAY: pos: " + pieceArray[pieceIndex].getPosition() + " = " + pieceArray[pieceIndex].id);
             pieceIndex++;
         }
     }
@@ -169,8 +176,10 @@ public class Board {
     }
 
     public void makeMove(int move){
+        System.out.println("Swapping pos: " + selectedPosition + " with id " + position[selectedPosition] + " with pos: " + move + " with id " + position[move]);
         position[move] = position[selectedPosition];
         position[selectedPosition] = 0;
+        System.out.println("Moving piece at " + selectedPosition);
         pieceSelected = false;
         updateLocations();
     }

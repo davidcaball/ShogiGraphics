@@ -48,8 +48,8 @@ public class Piece {
 
         //change the white boolean to false because a piece id above 14 is black, also rotate the piece
         //since it should be displayed upside down
-        if(id > 14) {
-            white = false;
+        if(id < 15) {
+            white = true;
             sprite.setRotation(180.0f);
         }
 
@@ -79,17 +79,20 @@ public class Piece {
         return position;
     }
 
-
+    boolean flag = true;
     //draws this specific piece
     public void draw(SpriteBatch batch){
-      //  System.out.println("drawing piece " + id + "pos(" + position + ") at " + sprite.getX() + ", " + sprite.getY() + "" + "is master Tex null: " + (masterTexture == null)
+        if(flag) {
+            System.out.println("drawing piece " + id + "pos(" + position + ") at " + sprite.getX() + ", " + sprite.getY() + "" + "is master Tex null: " + (masterTexture == null));
+            flag = false;
+        }
       //  + "sprite coords are " + region.getRegionX() + ", " + region.getRegionY());
         sprite.draw(batch);
     }
 
     //gets the position of a piece and returns the coordinates it should be drawn at as a Vector2
     public Vector2 positionToCoordinates(int pos){
-        Vector2 start = new Vector2(1175.0f, 70.0f);
+        Vector2 start = new Vector2(1175.0f, 870f); //y was 70
         if(pos > 80){
             //TODO: get captured locations
         }
@@ -99,9 +102,9 @@ public class Piece {
 
           //  System.out.println("pos is " + pos + "column: " + column + "row: " + row);
             start.x -= 100 * column;
-            start.y += 100 * row;
+            start.y -= 100 * row;
         }
-      //  System.out.println("piece " + id + " should be drawn at position " + start.x + ", " + start.y);
+        System.out.println("piece " + id + " should be drawn at position " + start.x + ", " + start.y);
         return start;
     }
 
@@ -122,7 +125,17 @@ public class Piece {
         Vector2 coords;
         coords = Constants.spriteRegions.get(id);
         sprite.setRegion((int)coords.x, (int)coords.y, Constants.SQUARE_SIZE, Constants.SQUARE_SIZE);
+        if(id < 15) {
+            white = true;
+            sprite.setRotation(180f);
+        }
+        else{
+            white = false;
+            sprite.setRotation(0f);
+        }
     }
+
+
 
 
 
