@@ -1,5 +1,6 @@
 package com.shogi.game;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.ConeShapeBuilder;
 import com.badlogic.gdx.math.Vector2;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 
 import java.util.ArrayList;
 
@@ -43,12 +45,14 @@ public class Piece {
 
         region = pieceIdToTextureRegion();
         sprite = new Sprite(region);
-        Vector2 coords = positionToCoordinates(position);
+        Vector2 coords = Constants.posToCoordinates[position];
         sprite.setPosition(coords.x, coords.y);
+        sprite.setColor(Color.WHITE);
 
         //change the white boolean to false because a piece id above 14 is black, also rotate the piece
         //since it should be displayed upside down
         if(id < 15) {
+            sprite.setColor(Color.BLUE);
             white = true;
             sprite.setRotation(180.0f);
         }
@@ -90,23 +94,8 @@ public class Piece {
         sprite.draw(batch);
     }
 
-    //gets the position of a piece and returns the coordinates it should be drawn at as a Vector2
-    public Vector2 positionToCoordinates(int pos){
-        Vector2 start = new Vector2(1175.0f, 870f); //y was 70
-        if(pos > 80){
-            //TODO: get captured locations
-        }
-        else{
-            int column = pos % 9;
-            int row = pos / 9;
 
-          //  System.out.println("pos is " + pos + "column: " + column + "row: " + row);
-            start.x -= 100 * column;
-            start.y -= 100 * row;
-        }
-        System.out.println("piece " + id + " should be drawn at position " + start.x + ", " + start.y);
-        return start;
-    }
+
 
     //this method creates the texture region that the sprite will use, it uses a master texture passed from the
     //Game class and retrieves the coordinates for each specific piece by putting the piece id into a hashmap
@@ -126,10 +115,12 @@ public class Piece {
         coords = Constants.spriteRegions.get(id);
         sprite.setRegion((int)coords.x, (int)coords.y, Constants.SQUARE_SIZE, Constants.SQUARE_SIZE);
         if(id < 15) {
+            sprite.setColor(Color.BLUE);
             white = true;
             sprite.setRotation(180f);
         }
         else{
+            sprite.setColor(Color.WHITE);
             white = false;
             sprite.setRotation(0f);
         }

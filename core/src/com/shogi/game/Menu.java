@@ -91,15 +91,7 @@ public class Menu extends Screen{
         batch.draw(menuTexture, 0, 0);
         font.draw(batch, "Play", 674, 660);
         font2.draw(batch, "Exit", 700, 400);
-//        batch.end();
-//        batch.begin();
-//        ShapeRenderer shapeRenderer = new ShapeRenderer();
-//        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-//
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//        shapeRenderer.setColor(Color.RED);
-//        shapeRenderer.rect(685, 220, 275,145);
-//        shapeRenderer.end();
+
 
     }
 

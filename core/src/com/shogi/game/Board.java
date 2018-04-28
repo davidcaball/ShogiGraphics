@@ -143,8 +143,38 @@ public class Board {
     */
 
 
+    //checks to see if piece at one position can capture another, if it can it will call the capture
+    //method, if not it will print out an error message
+    public void attemptCapture(int currentPos, int posToCapture){
+        if(position[currentPos] == 0){
+            System.out.println("Position is empty, can not capture from this position");
+            return;
+        }
+        if(position[currentPos] < 15){
+            if(position[posToCapture] > 14){
+                capture(currentPos, posToCapture);
+            }
+            else{
+                System.out.println("Can no capture your own piece");
+            }
+        }
+        else if(position[currentPos] > 14){
+            if(position[posToCapture] < 15){
+                capture(currentPos, posToCapture);
+            }
+            else{
+                System.out.println("Can no capture your own piece");
+            }
+        }
+    }
 
 
+
+    //performs the capture by moving the selected piece to the position to capture, it will then
+    //move the captured piece to the capture zone
+    public void capture(int currentPos, int posToCapture){
+
+    }
 
 
     public void updateLocations(){
@@ -159,7 +189,7 @@ public class Board {
 
             pieceArray[pieceIndex].setId(position[i]);
             pieceArray[pieceIndex].setPosition(i);
-            Vector2 newCoords = pieceArray[pieceIndex].positionToCoordinates(i); //TODO: fix this reverse shit
+            Vector2 newCoords = Constants.posToCoordinates[i];
             pieceArray[pieceIndex].sprite.setPosition(newCoords.x, newCoords.y);
             pieceArray[pieceIndex].updateTexture(position[i]);
 
@@ -296,10 +326,10 @@ public class Board {
 
         //white pawn
         if(id == 13)
-            addIfInBound(moves, pos + 9, pos);
+            addIfLegal(moves, pos + 9, pos);
             //black pawn
         else if(id == 27)
-            addIfInBound(moves, pos - 9, pos);
+            addIfLegal(moves, pos - 9, pos);
 
             //rook
         else if(id == 9 || id == 23){
@@ -318,19 +348,19 @@ public class Board {
         //bishop
         else if(id == 11 || id == 25){
             for(int i = pos - 8; isInBound(i); i -= 8) { // Up + Left
-                if(!addIfInBound(moves, i, pos)) break;
+                if(!addIfLegal(moves, i, pos)) break;
                 if(isAtBorder(i)) break;
             }
             for(int i = pos - 10; isInBound(i); i -= 10) { //Up + Right
-                if(!addIfInBound(moves, i, pos)) break;
+                if(!addIfLegal(moves, i, pos)) break;
                 if(isAtBorder(i)) break;
             }
             for(int i = pos + 8; isInBound(i); i += 8){ //Down + Left
-                if(!addIfInBound(moves, i, pos)) break;
+                if(!addIfLegal(moves, i, pos)) break;
                 if(isAtBorder(i)) break;
             }
             for(int i = pos + 10; isInBound(i); i += 10) { //Down + Right
-                if(!addIfInBound(moves, i, pos)) break;
+                if(!addIfLegal(moves, i, pos)) break;
                 if(isAtBorder(i)) break;
             }
         }
@@ -338,71 +368,71 @@ public class Board {
         //white lance
         else if(id == 1)
             for(int i = pos + 9; i < 81; i+=9){
-                addIfInBound(moves, i, pos);
+                addIfLegal(moves, i, pos);
             }
 
             //black lance
         else if(id == 15)
             for(int i = pos - 9; i >=0 ; i-=9)
-                addIfInBound(moves, i, pos);
+                addIfLegal(moves, i, pos);
 
             //white knight
         else if(id == 3){
-            addIfInBound(moves, pos - 18 + 1, pos);
-            addIfInBound(moves, pos - 18 + 1, pos);
+            addIfLegal(moves, pos - 18 + 1, pos);
+            addIfLegal(moves, pos - 18 + 1, pos);
         }
 
         //white silver
         else if(id == 5){
-            addIfInBound(moves, pos + 8, pos);
-            addIfInBound(moves, pos + 9, pos);
-            addIfInBound(moves, pos - 10, pos);
-            addIfInBound(moves, pos - 8, pos);
-            addIfInBound(moves, pos + 10, pos);
+            addIfLegal(moves, pos + 8, pos);
+            addIfLegal(moves, pos + 9, pos);
+            addIfLegal(moves, pos - 10, pos);
+            addIfLegal(moves, pos - 8, pos);
+            addIfLegal(moves, pos + 10, pos);
         }
 
         //black silver
         else if(id == 19){
-            addIfInBound(moves, pos - 8, pos);
-            addIfInBound(moves, pos - 9, pos);
-            addIfInBound(moves, pos - 10, pos);
-            addIfInBound(moves, pos + 8, pos);
-            addIfInBound(moves, pos + 10, pos);
+            addIfLegal(moves, pos - 8, pos);
+            addIfLegal(moves, pos - 9, pos);
+            addIfLegal(moves, pos - 10, pos);
+            addIfLegal(moves, pos + 8, pos);
+            addIfLegal(moves, pos + 10, pos);
         }
 
         //white gold
         else if(id == 7){
 
-            addIfInBound(moves, pos + 1, pos);
-            addIfInBound(moves, pos - 1, pos);
-            addIfInBound(moves, pos + 8, pos);
-            addIfInBound(moves, pos + 9, pos);
-            addIfInBound(moves, pos - 9, pos);
-            addIfInBound(moves, pos + 10, pos);
+            addIfLegal(moves, pos + 1, pos);
+            addIfLegal(moves, pos - 1, pos);
+            addIfLegal(moves, pos + 8, pos);
+            addIfLegal(moves, pos + 9, pos);
+            addIfLegal(moves, pos - 9, pos);
+            addIfLegal(moves, pos + 10, pos);
 
 
         }
 
         //black gold
         else if(id == 21){
-            addIfInBound(moves, pos - 8, pos);
-            addIfInBound(moves, pos - 9, pos);
-            addIfInBound(moves, pos - 10, pos);
-            addIfInBound(moves, pos + 1, pos);
-            addIfInBound(moves, pos - 1, pos);
-            addIfInBound(moves, pos + 9, pos);
+            addIfLegal(moves, pos - 8, pos);
+            addIfLegal(moves, pos - 9, pos);
+            addIfLegal(moves, pos - 10, pos);
+            addIfLegal(moves, pos + 1, pos);
+            addIfLegal(moves, pos - 1, pos);
+            addIfLegal(moves, pos + 9, pos);
         }
 
         //king
         else if(id == 8 || id == 22){
-            addIfInBound(moves, pos - 8, pos);
-            addIfInBound(moves, pos - 9, pos);
-            addIfInBound(moves, pos - 10, pos);
-            addIfInBound(moves, pos + 8, pos);
-            addIfInBound(moves, pos + 10, pos);
-            addIfInBound(moves, pos + 1, pos);
-            addIfInBound(moves, pos - 1, pos);
-            addIfInBound(moves, pos + 9, pos);
+            addIfLegal(moves, pos - 8, pos);
+            addIfLegal(moves, pos - 9, pos);
+            addIfLegal(moves, pos - 10, pos);
+            addIfLegal(moves, pos + 8, pos);
+            addIfLegal(moves, pos + 10, pos);
+            addIfLegal(moves, pos + 1, pos);
+            addIfLegal(moves, pos - 1, pos);
+            addIfLegal(moves, pos + 9, pos);
         }
 
         //TODO: add moves for promoted piece
@@ -411,7 +441,7 @@ public class Board {
     }
 
     //adds the possible move to the arraylist if it is in the bounds of the board
-    public boolean  addIfInBound(ArrayList<Integer> list, int move, int pos){
+    public boolean  addIfLegal(ArrayList<Integer> list, int move, int pos){
 
         if(move >= 0 && move < 81){
             Boolean isWhite = (position[pos] < 15 && position[pos] > 0);
