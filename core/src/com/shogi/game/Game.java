@@ -22,13 +22,20 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Game extends Screen implements InputProcessor{
 	SpriteBatch batch;
+
 	Texture boardTexture;
 	Texture masterTexture;
+
+	//Board object that handles all the pieces
 	Board board;
+
+	//this boolean should be true when it is player one's turn and false when it is player two's turn
+	Boolean playerOnesTurn;
 
 	Game(Texture masterTexture, Texture boardTexture, Camera camera){
 
 
+		playerOnesTurn = true;
 		this.masterTexture = masterTexture;
 		this.boardTexture = boardTexture;
 
@@ -40,22 +47,46 @@ public class Game extends Screen implements InputProcessor{
 	@Override
 	public int Run(SpriteBatch batch){
 
+		System.out.println("Player " + (playerOnesTurn ? "One's " : "Two's " ) + " Turn");
+
 		if(Gdx.input.justTouched()){
 			int position = board.getPositionFromMouse();
 
-			int testid = -1;
-			for(int i = 0; i < 40; i++){
-				if(board.pieceArray[i].id == board.position[position]){
-					testid = board.pieceArray[i].id;
-				}
-			}
-			System.out.println("Selecting square " + position + " has position value: " + board.position[position] + " the piece has id " + testid);
+
 
 			if(position >= 0){
+				/*
+				this code checks to make sure the correct player  is making a move, as well as once a piece
+				is selected, that the position they are trying to move to is valid, based on the players
+				turn */
 				if(board.pieceSelected){
-					board.attemptMove(position);
+					if(playerOnesTurn){
+						if(board.position[position] > 14 || board.position[position] == 0) {
+							System.out.println("Attempting Move for Player 1");
+							if (board.attemptMove(position))
+								playerOnesTurn = false;
+						}
+					}
+					else if(!playerOnesTurn){
+						if(board.position[position] < 15){
+							System.out.println("Attempting Move for Player 2");
+							if(board.attemptMove(position)){
+								playerOnesTurn = true;
+							}
+						}
+					}
+
 				}
-				board.selectSquare(position);
+				//checks to make sure player is selecting a piece on their side
+				if(playerOnesTurn){
+					if(board.position[position] < 15)
+						board.selectSquare(position);
+				}
+				else if(!playerOnesTurn){
+					if(board.position[position] > 14 || board.position[position] == 0)
+						board.selectSquare(position);
+				}
+
 			}
 
 		}
@@ -68,8 +99,6 @@ public class Game extends Screen implements InputProcessor{
 
 	public void Render(SpriteBatch batch){
 		board.draw(batch);
-
-
 	}
 
 

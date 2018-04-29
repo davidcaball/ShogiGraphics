@@ -176,7 +176,8 @@ public class Board {
 
     }
 
-
+    //this method loops through the position array and updates the positon of the pieces to reflect
+    //new data, should be called after making a move, capturing a piece, dropping a piece etc.
     public void updateLocations(){
         int pieceIndex = 0;
         for(int i = 0; i < 95; i++){
@@ -198,11 +199,17 @@ public class Board {
         }
     }
 
-    public void attemptMove(int move){
+
+    //attempts to make a move by checking if it is in the set of legal moves, if it is, it will
+    //call makeMove and return true back to the game class so it can switch the players turn
+    public Boolean attemptMove(int move){
         for(int i = 0; i < moves.size(); i++){
-            if(moves.get(i) == move)
+            if(moves.get(i) == move) {
                 makeMove(move);
+                return true;
+            }
         }
+        return false;
     }
 
     public void makeMove(int move){
