@@ -45,8 +45,8 @@ public class Main extends ApplicationAdapter {
 
         //initialize textures
         batch = new SpriteBatch();
-        boardTexture = new Texture("extendedshogineonboard2.png");
-        masterTexture = new Texture("spritesheet.png");
+        boardTexture = new Texture("classicboard.png");
+        masterTexture = new Texture("classicspritesheet.png");
         menuTexture = new Texture("menuTexture.png");
 
         //Initialize camera

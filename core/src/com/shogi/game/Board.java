@@ -5,8 +5,10 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.ConeShapeBuilder;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -21,25 +23,49 @@ import java.util.ArrayList;
  * Created by David on 4/27/2018.
  */
 public class Board {
+
+    //the camera used to draw, is passed from the Main class
+    Camera camera;
+
+    //The textures this class will use, masterTexture contains the textures for the pieces
+    //boardTexture contains the background image for the board
     Texture masterTexture;
     Texture boardTexture;
+
+    //is true is a piece is currently selected
+    Boolean pieceSelected;
+
+    //hoveredSquare will highlight the current selected square, selected square will highlight
+    //a square that has been selected with a green color
     Sprite hoveredSquare;
     Sprite selectedSquare;
-    int selectedPosition;
-    Rectangle boardRectangle;
-    Camera camera;
-    Boolean pieceSelected;
-    ArrayList<Sprite> possibleMoveSprites;
 
-    //holds the possible moves for the selected piece
-    ArrayList<Integer> moves = new ArrayList<Integer>();
+    //selected position is changed when a player actually clicks on a square, and is saved until
+    //the user makes a move or selectes a different square
+    int selectedPosition;
+
+    //is the rectangle that covers the board, used to see if the mouse is in the board space
+    Rectangle boardRectangle;
+
+    //this is the list of sprites that are used to highlight the possible moves when a piece is selected
+    //used in combination with the possibleMovesForCurrentSelection integer
+    ArrayList<Sprite> possibleMoveSprites;
 
     //this keeps track of how many possible moves there are for the piece that is selected, it
     //prevents drawing uncecessary sprites
     int possibleMovesForCurrentSelection;
 
+    //holds the possible moves for the selected piece
+    ArrayList<Integer> moves = new ArrayList<Integer>();
+
+
+
+
 
     byte [] position = new byte[81+14+2]; //81 board spaces, 14 counters for captured pieces, and 2 king locations
+
+    //array that holds all the pieces to be drawn, operation or not done on the pieces but on the position array, then
+    //after a move has been completed this array will be updated to reflect the position array
     Piece[] pieceArray = new Piece[40];
 
     Board(Texture masterTexture, Texture boardTexture, Camera camera){
@@ -72,7 +98,6 @@ public class Board {
             possibleMoveSprites.add(new Sprite(masterTexture, 694, 100, 100, 100));
             possibleMoveSprites.get(i).setColor(Color.BLUE);
         }
-
 
 
     }
@@ -109,6 +134,8 @@ public class Board {
         //takes user input and highlights the selected square
        highlightHoveredSquare();
 
+
+
     }
 
 
@@ -125,11 +152,19 @@ public class Board {
            }
        }
 
-        selectedSquare.draw(batch);
+        if(pieceSelected)
+            selectedSquare.draw(batch);
+
         hoveredSquare.draw(batch);
-        for(int i = 0; i < possibleMovesForCurrentSelection && i < possibleMoveSprites.size(); i++){
+        for(int i = 0; pieceSelected && i < possibleMovesForCurrentSelection && i < possibleMoveSprites.size(); i++){
             possibleMoveSprites.get(i).draw(batch);
         }
+
+
+
+
+
+        //TODO: draw the capture zone
 
     }
 
@@ -141,7 +176,7 @@ public class Board {
      /*
    ***********************SECONDARY METHODS***********************
     */
-
+    public boolean checkForPromotion(){}
 
     //checks to see if piece at one position can capture another, if it can it will call the capture
     //method, if not it will print out an error message
@@ -155,7 +190,7 @@ public class Board {
                 capture(currentPos, posToCapture);
             }
             else{
-                System.out.println("Can no capture your own piece");
+                System.out.println("Can not capture your own piece");
             }
         }
         else if(position[currentPos] > 14){
@@ -163,7 +198,7 @@ public class Board {
                 capture(currentPos, posToCapture);
             }
             else{
-                System.out.println("Can no capture your own piece");
+                System.out.println("Can not capture your own piece");
             }
         }
     }
@@ -173,8 +208,44 @@ public class Board {
     //performs the capture by moving the selected piece to the position to capture, it will then
     //move the captured piece to the capture zone
     public void capture(int currentPos, int posToCapture){
-
+        if(position[posToCapture] > 14){
+            if(position[posToCapture] == 17)
+                position[81] = 17;
+            else if(position[posToCapture] == 25)
+                position[82] = 25;
+            else if(position[posToCapture] == 19)
+                position[83] = 19;
+            else if(position[posToCapture] == 21)
+                position[84] = 21;
+            else if(position[posToCapture] == 15)
+                position[85] = 15;
+            else if(position[posToCapture] == 27)
+                position[86] = 27;
+            else if(position[posToCapture] == 17)
+                position[87] = 17;
+        }
+        if(position[posToCapture] < 15){
+            if(position[posToCapture] == 11)
+                position[88] = 11;
+            else if(position[posToCapture] == 9)
+                position[89] = 9;
+            else if(position[posToCapture] == 7)
+                position[90] = 7;
+            else if(position[posToCapture] == 5)
+                position[91] = 5;
+            else if(position[posToCapture] == 3)
+                position[92] = 3;
+            else if(position[posToCapture] == 13)
+                position[93] = 13;
+            else if(position[posToCapture] == 1)
+                position[94] = 1;
+        }
+        for(int i =  80; i < 95; i++){
+            System.out.println("Position : "  + posToCapture + " =  " + position[posToCapture]);
+        }
     }
+
+
 
     //this method loops through the position array and updates the positon of the pieces to reflect
     //new data, should be called after making a move, capturing a piece, dropping a piece etc.
@@ -200,6 +271,8 @@ public class Board {
     }
 
 
+
+
     //attempts to make a move by checking if it is in the set of legal moves, if it is, it will
     //call makeMove and return true back to the game class so it can switch the players turn
     public Boolean attemptMove(int move){
@@ -212,14 +285,19 @@ public class Board {
         return false;
     }
 
+
+
     public void makeMove(int move){
-        System.out.println("Swapping pos: " + selectedPosition + " with id " + position[selectedPosition] + " with pos: " + move + " with id " + position[move]);
+
+        if(position[move] > 0) attemptCapture(selectedPosition, move);
+
         position[move] = position[selectedPosition];
         position[selectedPosition] = 0;
-        System.out.println("Moving piece at " + selectedPosition);
         pieceSelected = false;
         updateLocations();
     }
+
+
 
     //highlights a cell if it has been clicked and there is a piece in that square
     public void selectSquare(int pos){
@@ -236,6 +314,8 @@ public class Board {
         showPossibleMoves(pos);
     }
 
+
+
     public void showPossibleMoves(int pos){
         moves = getPossibleMoves(pos, position[pos]);
         possibleMovesForCurrentSelection = moves.size();
@@ -249,30 +329,6 @@ public class Board {
             possibleMoveSprites.get(i).setAlpha(0f);
         }
     }
-
-
-
-    public int getPositionFromMouse(){
-        Vector3 input = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-        camera.unproject(input);
-        System.out.print("X: " + input.x + "Y: " + input.y);
-        int row = 0, column = 0;
-        if(boardRectangle.contains(input.x, input.y)) {
-            input.x -= 372;
-            input.y -= 86;
-
-            column = (int)input.x / (int) 100;
-            row = (int) input.y / (int) 100;
-            return 80 - (row * 9 + column);
-        }
-        else{
-            //TODO: work on captured cells
-        }
-
-       return -1;
-
-    }
-
 
     public void highlightHoveredSquare(){
         //code to highlight selected square
@@ -291,6 +347,44 @@ public class Board {
             hoveredSquare.setAlpha(0.0f);
         }
     }
+
+     /*
+   ***********************HELPER METHODS***********************
+    */
+
+
+    //returns the position on the board (0 - 94) that the user is currently hovering over
+    public int getPositionFromMouse(){
+        Vector3 input = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(input);
+        System.out.print("X: " + input.x + "Y: " + input.y);
+        int row = 0, column = 0;
+        if(boardRectangle.contains(input.x, input.y)) {
+            input.x -= 372;
+            input.y -= 86;
+
+            column = (int)input.x / (int) 100;
+            row = (int) input.y / (int) 100;
+
+            return 80 - (row * 9 + column);
+        }
+        else{
+            //uses the posToCoordinates array in the constants folder to see if the user is clicking
+            //on a capture square
+            Rectangle captureRec = new Rectangle();
+            for(int i = 81; i < 96; i++){
+                Vector2 capturePos = Constants.posToCoordinates[i];
+                captureRec.set(capturePos.x, capturePos.y, 100, 100);
+                if(captureRec.contains(input.x, input.y)) {
+                    return i;
+                }
+            }
+        }
+
+       return -1;
+
+    }
+
 
 
     //returns the coordinates where a square should be drawn to highlight a cell
@@ -341,14 +435,18 @@ public class Board {
             //rook
         else if(id == 9 || id == 23){
             //adds all positions in that row
-            for(int i = pos - pos % 9; i < ((pos + 9) - (pos % 9)); i++) {
-                if(i == pos) continue;
-                moves.add(i);
+            for(int i = pos + 1;(( pos / 9) == (i / 9)); i++) {
+                if(!addIfLegal(moves, i, pos)) break;
+            }
+            for(int i = pos - 1; pos / 9 == i / 9; i--) {
+                if(!addIfLegal(moves, i, pos)) break;
             }
             //adds all moves in that column
-            for(int i = pos % 9; i < 81; i+=9) {
-                if(i == pos) continue;
-                moves.add(i);
+            for(int i = pos + 9; i < 81; i+=9) {
+                if(!addIfLegal(moves, i, pos)) break;
+            }
+            for(int i = pos - 9; i > 0; i-=9) {
+                if(!addIfLegal(moves, i, pos)) break;
             }
         }
 
@@ -373,21 +471,32 @@ public class Board {
         }
 
         //white lance
-        else if(id == 1)
-            for(int i = pos + 9; i < 81; i+=9){
-                addIfLegal(moves, i, pos);
+        else if(id == 1) {
+            for (int i = pos + 9; i < 81; i += 9) {
+                if (!addIfLegal(moves, i, pos))
+                    break;
             }
-
-            //black lance
-        else if(id == 15)
-            for(int i = pos - 9; i >=0 ; i-=9)
-                addIfLegal(moves, i, pos);
-
-            //white knight
-        else if(id == 3){
-            addIfLegal(moves, pos - 18 + 1, pos);
-            addIfLegal(moves, pos - 18 + 1, pos);
         }
+        //TODO: fix lances moves
+            //black lance
+        else if(id == 15) {
+            for (int i = pos - 9; i >= 0; i -= 9)
+                if (!addIfLegal(moves, i, pos))
+                    break;
+        }
+
+        //white knight
+        else if(id == 3){
+            addIfLegal(moves, pos + 18 + 1, pos);
+            addIfLegal(moves, pos + 18 +- 1, pos);
+        }
+
+        //black knight
+        else if(id == 17){
+            addIfLegal(moves, pos - 18 + 1, pos);
+            addIfLegal(moves, pos - 18 - 1, pos);
+        }
+
 
         //white silver
         else if(id == 5){
@@ -454,7 +563,13 @@ public class Board {
             Boolean isWhite = (position[pos] < 15 && position[pos] > 0);
             if(isWhite && position[move] < 15  && position[move] > 0) return false;
             if(!isWhite && position[move] > 15) return false;
+
             list.add(move);
+
+            //does not allow pieces to go past pieces they can capture
+            if(!isWhite && position[move] < 15  && position[move] > 0) return false;
+            if(isWhite && position[move] > 15) return false;
+
             return true;
         }
         return false;

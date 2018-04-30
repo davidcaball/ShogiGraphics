@@ -8,9 +8,11 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -32,6 +34,10 @@ public class Game extends Screen implements InputProcessor{
 	//this boolean should be true when it is player one's turn and false when it is player two's turn
 	Boolean playerOnesTurn;
 
+	//the font that will show who's turn it is
+	BitmapFont turnFont;
+
+
 	Game(Texture masterTexture, Texture boardTexture, Camera camera){
 
 
@@ -41,17 +47,30 @@ public class Game extends Screen implements InputProcessor{
 
 		board = new Board(masterTexture, boardTexture, camera);
 
+		//create font to be used
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("menutext.otf"));
+		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		parameter.size = 60;
+		parameter.characters = ("Player OneTwo'sTurn");
+		parameter.shadowColor = Color.BLACK;
+		parameter.shadowOffsetX = 3;
+		parameter.shadowOffsetY = 3;
+		turnFont = generator.generateFont(parameter);
+		turnFont.setColor(Color.WHITE);
+		generator.dispose();
+
+
 
 	}
 
 	@Override
 	public int Run(SpriteBatch batch){
 
-		System.out.println("Player " + (playerOnesTurn ? "One's " : "Two's " ) + " Turn");
+		//System.out.println("Player " + (playerOnesTurn ? "One's " : "Two's " ) + " Turn");
 
 		if(Gdx.input.justTouched()){
 			int position = board.getPositionFromMouse();
-
+		System.out.println(position);
 
 
 			if(position >= 0){
@@ -99,6 +118,9 @@ public class Game extends Screen implements InputProcessor{
 
 	public void Render(SpriteBatch batch){
 		board.draw(batch);
+
+		//draws the font that say's which players turn in is
+		turnFont.draw(batch, "Player " + (playerOnesTurn ? "One's" : "Two's") + " Turn", 1340, 1060);
 	}
 
 

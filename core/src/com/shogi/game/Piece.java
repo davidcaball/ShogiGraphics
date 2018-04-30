@@ -52,7 +52,7 @@ public class Piece {
         //change the white boolean to false because a piece id above 14 is black, also rotate the piece
         //since it should be displayed upside down
         if(id < 15) {
-            sprite.setColor(Color.BLUE);
+           // sprite.setColor(Color.BLUE);
             white = true;
             sprite.setRotation(180.0f);
         }
@@ -115,13 +115,19 @@ public class Piece {
         coords = Constants.spriteRegions.get(id);
         sprite.setRegion((int)coords.x, (int)coords.y, Constants.SQUARE_SIZE, Constants.SQUARE_SIZE);
         if(id < 15) {
-            sprite.setColor(Color.BLUE);
+       //     sprite.setColor(Color.BLUE);
             white = true;
             sprite.setRotation(180f);
         }
         else{
             sprite.setColor(Color.WHITE);
             white = false;
+            sprite.setRotation(0f);
+        }
+        if(position > 80 && position < 88){
+            sprite.setRotation(180f);
+        }
+        if(position > 87){
             sprite.setRotation(0f);
         }
     }

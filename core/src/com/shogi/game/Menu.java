@@ -41,7 +41,7 @@ public class Menu extends Screen{
         parameter.shadowColor = Color.BLACK;
         parameter.shadowOffsetX = 3;
         parameter.shadowOffsetY = 3;
-        font = generator.generateFont(parameter); // font size 12 pixels
+        font = generator.generateFont(parameter);
         font.setColor(unselectedColor);
         font2 = generator.generateFont(parameter);
         font2.setColor(unselectedColor);
